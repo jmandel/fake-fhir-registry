@@ -1,0 +1,12 @@
+steps:
+- name: gcr.io/cloud-builders/gcloud
+  args:
+  - kms
+  - decrypt
+  - --ciphertext-file=deploykey.env.encrypted
+  - --plaintext-file=deploykey.env
+  - --location=global
+  - --keyring=fhir-registry-keyring
+  - --key=fhir-registry-key
+- name: gcr.io/cloud-builders/docker
+  args: ['run', '--env-file', 'deploykey.env', '-v', '/workspace:/workspace', 'devillex/docker-firebase',  'sh', '-c', 'cd /workspace && firebase deploy --project fhir-org-registry']
